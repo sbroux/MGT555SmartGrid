@@ -22,6 +22,7 @@ def led(light):
         led_1.write(0)
 
 
-while True:
+for x in range(10):
     light = led_1.read()
     led(light)
+    time.sleep(0.2)
