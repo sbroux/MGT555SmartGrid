@@ -1,28 +1,17 @@
-# Decision Making Algorithm For Testing
+from pyfirmata import Arduino
 
-import serial
-import time
-import pyfirmata
-
-comport = "COM3"  # change with the port u are using
-
-board = pyfirmata.Arduino(comport)
-
-# Reçoit en input un tableau binaire,
-# 0 ou 1 pour dire si une led strip/ indicateur Leds est allumé ou pas. Output, illumine les Leds.
-
-led_1 = board.get_pin("d:8:o")  # on choisis le pin
+# import time
 
 
-def led(light):
-    if light == [0]:
-        led_1.write(1)
+board = Arduino("/dev/tty.usbserial-1110")
+print(board.get_firmata_version())
+# led_1 = board.get_pin("d:8:o")  # on choisis le pin
+# pixels = neopixel.NeoPixel(board.NEOPIXEL, 10, auto_write=False)
+# pixels[9] = (0, 10, 0)
+# pixels[0] = (10, 0, 0)
 
-    elif light == [1]:
-        led_1.write(0)
-
-
-for x in range(10):
-    light = led_1.read()
-    led(light)
-    time.sleep(0.2)
+# while True:
+#     board.digital[13].write(1)
+#     time.sleep(0.1)
+#     board.digital[13].write(0)
+#     time.sleep(0.1)

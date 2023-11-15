@@ -1,18 +1,24 @@
-import pyfirmata
-
-comport = "COM3" # change with the port u are using
-
-board = pyfirmata.Arduino(comport)
-
-#Reçoit en input un tableau binaire, 
-# 0 ou 1 pour dire si une led strip/ indicateur Leds est allumé ou pas. Output, illumine les Leds.
-
-led_1 = board.get_pin("d:8:o") # on choisis le pin
+import serial
+import time
 
 
-def led(light):
-    if light == [0]:
-        led_1.write(1)
+comport = "/dev/tty.usbserial-1110"  # change with the port u are using
 
-    elif light == [1]:
-       led_1.write(0)
+
+arduino = serial.Serial(comport, 9600)
+time.sleep(2)
+i = 0
+while i < 10:
+    arduino.write(b"r")  # Command to turn on first LEDs in red
+    # Delay for a certain duration (for example, 2 seconds)
+    time.sleep(2)
+    # Send command to Arduino to turn on next LEDs in blue
+    arduino.write(b"b")
+    time.sleep(2)
+    ++i  # Command to turn on next LEDs in blue
+
+
+# Close the serial connection
+arduino.close()
+print("connection closed")
+# Close the serial connection
