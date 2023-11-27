@@ -40,28 +40,18 @@ threshold_room2_low = 10  # Threshold for low battery level in Room 2
 i = 0
 
 
-def decide_trajectory(room1_charge, room2_charge, solar_active, vehicle_arrival):
-    if vehicle_arrival:
-        if room1_charge > 10:
-            room1_charge -= 10
-            return "R1R2"
-        else:
-            if room2_charge > 0:
-                return "R2C"
-            else:
-                return "gCR2"
+# Function to determine the command for Arduino based on conditions
+def decide_command():
+    global room1_battery_level, room2_battery_level
+
+    if room1_battery_level > threshold_room1_low:
+        return arduino.write(grid_room1)
+    elif room1_battery_level <= threshold_room1_low and room2_battery_level > 0:
+        return arduino.write(room1_room2)
+    elif room2_battery_level <= threshold_room2_low:
+        return arduino.write(room2_grid)
     else:
-        if room1_charge <= 0:
-            if room2_charge > 0:
-                return "R1R2"
-            else:
-                return "gR1"
-        elif room2_charge <= 0:
-            if solar_active:
-                return "SR2"
-            else:
-                return "gR2"
-    return None
+        return chargers_grid
 
 
 while i < simulation_time:
