@@ -27,7 +27,7 @@ chargers_grid = "CR2g"
 grid_chargers = "gCR2"
 
 # Define the time of the simulation
-simulation_time = 3000  # in seconds
+simulation_time = 3600  # in seconds
 
 # Define initial battery levels and constraints
 room1_battery_level = 100  # Room 1 battery level in percentage
