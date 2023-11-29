@@ -1,6 +1,16 @@
 import serial
 import time
+import simpy
+import simpy.rt
 
+
+def slow_proc(env):
+    time.sleep(0.02)  # Heavy computation :-)
+    yield env.timeout(1)
+
+
+env = simpy.rt.RealtimeEnvironment(factor=0.01)
+proc = env.process(slow_proc(env))
 # Initialize the serial connection
 comport = "/dev/tty.usbserial-1110"  # change with the port u are using
 arduino = serial.Serial(comport, 9600)
