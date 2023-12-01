@@ -9,12 +9,10 @@ arduino = serial.Serial(comport, 9600)
 time.sleep(2)
 i = 0
 while i < 10:
-    arduino.write(b"r")  # Command to turn on first LEDs in red
+    #arduino.write(b"f")  # Command to turn on first LEDs in red
     # Delay for a certain duration (for example, 2 seconds)
-    time.sleep(2)
     # Send command to Arduino to turn on next LEDs in blue
-    arduino.write(b"b")
-    time.sleep(2)
+    arduino.write(b"a")
     i +=1  # Command to turn on next LEDs in blue
 
 
