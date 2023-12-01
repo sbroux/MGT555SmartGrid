@@ -162,8 +162,8 @@ def decision_making(
     for index, row in vehicle_arrival_data.iterrows():
         vehicle_id = row["Vehicle_ID"]
         arrival_time = row["Date Time"]
+        print("arrival time", arrival_time)
 
-    while True:
         # Compare the arrival time in the dataset with the current simulation time
         if arrival_time == current_time:
             charge_vehicle(
@@ -177,6 +177,7 @@ def decision_making(
                 f"Making time-sensitive decisions for Vehicle {vehicle_id} at time {arrival_time} "
                 f"with current simulation time {current_time}"
             )
+            break  # Exit the loop once a decision has been made
 
     # Your time-sensitive decision-making algorithm goes here
     print(
