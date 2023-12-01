@@ -160,12 +160,8 @@ def decision_making(
     energy_price_grid,
 ):
     for index, row in vehicle_arrival_data.iterrows():
-        vehicle_id = row[
-            "Vehicle_ID"
-        ]  # Replace with the actual column name for vehicle ID
-        arrival_time = row[
-            "Date Time"
-        ]  # Replace with the actual column name for arrival time
+        vehicle_id = row["Vehicle_ID"]
+        arrival_time = row["Date Time"]
 
     while True:
         # Compare the arrival time in the dataset with the current simulation time

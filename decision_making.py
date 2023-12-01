@@ -39,13 +39,19 @@ i = 0
 # read vehicul arrival data
 file_path = "data/vehicle_arrival.csv"
 df_vehicle = pd.read_csv(file_path)
-
-# Establish a real-time simulation environment
-env = simpy.Environment()
+time_scaling_factor = 1 / 1200
+start_time = pd.Timestamp("2023-12-01 00:00:00")
+# Initialize the simulation environment with the specified start time
+env = simpy.rt.RealtimeEnvironment(
+    initial_time=start_time.timestamp(), factor=time_scaling_factor
+)
 
 
 def my_simulation():
-    yield env.timeout(0.1)
+    print(f"Simulation time: {env.now}")
+    yield env.timeout(3 * time_scaling_factor)  # 3 seconds in real life
+    print(f"Simulation time after timeout: {env.now}")
+    # 30 seconds in real life
     decision_making(
         env.now,
         df_vehicle,
@@ -57,11 +63,13 @@ def my_simulation():
     # Start the simulation with all the battery fully charged
 
 
-simulation_duration = (
-    48 * 60 * 30
+simulation_duration = env.now + 86400 * time_scaling_factor
+env.process(my_simulation())  # Run the simulation for a full day
+env.run(
+    until=simulation_duration
 )  # 48 hours in simulation time where 1 hour = 30 seconds
-env.process(my_simulation())
-env.run(until=simulation_duration)
+
+
 # Close the serial connection
 # arduino.close()
 # print("connection closed")
