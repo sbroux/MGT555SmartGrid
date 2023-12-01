@@ -161,7 +161,7 @@ def decision_making(
 ):
     for index, row in vehicle_arrival_data.iterrows():
         vehicle_id = row[
-            "Vehicle ID"
+            "Vehicle_ID"
         ]  # Replace with the actual column name for vehicle ID
         arrival_time = row[
             "Date Time"
