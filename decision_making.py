@@ -1,7 +1,23 @@
+# Smart Grid Simulation
 import serial
 import time
 import simpy
+import random
+import statistics
 import simpy.rt
+
+
+# Arrive at the station
+# get in line to charge
+# charge with room1
+# go
+class Station(object):
+    def __init__(self, env):
+        self.env = env
+        self.charge = simpy.Resource(env, capacity=2)
+
+    def charge():
+        yield self.env.timeout(1)
 
 
 def slow_proc(env):
@@ -48,22 +64,6 @@ threshold_room1_low = 10  # Threshold for low battery level in Room 1
 threshold_room2_low = 10  # Threshold for low battery level in Room 2
 
 i = 0
-
-
-# Function to determine the command for Arduino based on conditions
-def decide_command():
-    global room1_battery_level, room2_battery_level
-
-    if room1_battery_level > threshold_room1_low:
-        return arduino.write(grid_room1)
-    elif room1_battery_level <= threshold_room1_low and room2_battery_level > 0:
-        return arduino.write(room1_room2)
-    elif room2_battery_level <= threshold_room2_low:
-        return arduino.write(room2_grid)
-    else:
-        return chargers_grid
-
-
 while i < simulation_time:
     arduino.write(b"r")  # Command to turn on first LEDs in red
     # Delay for a certain duration (for example, 2 seconds)
