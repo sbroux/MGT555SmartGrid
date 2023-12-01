@@ -1,6 +1,63 @@
+import serial
+import time
+
+
+comport = "/dev/tty.usbserial-1110"  # change with the port u are using
+
+
+arduino = serial.Serial(comport, 9600)
+time.sleep(2)
 """
 We may add the constants here and do the decision in this section
 """
+# Defintion of constants
+grid_room1 = "gR1"
+room2_room1 = "R2R1"
+grid_room2 = "gR2"
+room2_grid = "R2g"
+solar_room2 = "SR2"
+room2_chargers = "R2C"
+chargers_grid = "CR2g"
+grid_chargers = "gCR2"
+
+
+def charge_room1(
+    room1_battery_level,
+    total_room1_battery_level,
+    room2_battery_level,
+    energy_price_grid,
+):
+    """
+    We charge the swapping batteries in room1 :
+    Two cases :
+        (1) We charge the swapping batteries with the stockage room (room2) depending on the battery level of room2
+        (2) We charge the swapping batteries with the grid and we pay the energy price
+
+    The threshold for the battery level in room2 is 30%
+
+    return : energy trajectory, room1_battery_level, room2_battery_level, energy_cost
+    """
+    energy_cost = 0
+    if room2_battery_level > 30:
+        room1_battery_level_empty = total_room1_battery_level - room1_battery_level
+        for i in range(room1_battery_level_empty):
+            room1_battery_level += (
+                1  # add the charging time for the simulation in real time
+            )
+            room2_battery_level -= 1
+
+        return room2_room1, room1_battery_level, room2_battery_level, energy_cost
+    else:
+        room1_battery_level_empty = total_room1_battery_level - room1_battery_level
+        for i in range(room1_battery_level_empty):
+            room1_battery_level += 1
+            energy_cost = energy_price_grid / 1000
+        return (
+            grid_room1,
+            room1_battery_level,
+            room2_battery_level,
+            energy_cost,
+        )  # 1 is the power of the battery
 
 
 def swap_batteries(room1_battery_level, vehicle_battery_level):
