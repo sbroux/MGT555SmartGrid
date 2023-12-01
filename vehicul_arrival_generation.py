@@ -26,7 +26,7 @@ data.sort(key=lambda x: pd.to_datetime(x[0]))
 file_path = "data/vehicle_arrival.csv"
 with open(file_path, mode="w", newline="") as file:
     writer = csv.writer(file)
-    writer.writerow(["Date Time", "Vehicle Arrival, Vehicle_ID"])  # Write header
+    writer.writerow(["Date Time", "Vehicle Arrival", " Vehicle_ID"])  # Write header
     writer.writerows(data)  # Write data rows
 
 print(
