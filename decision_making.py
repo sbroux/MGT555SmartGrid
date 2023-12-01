@@ -37,7 +37,7 @@ energy_price_grid = 0.2  # in euro/kWh
 i = 0
 
 # read vehicul arrival data
-file_path = "vehicle_arrival_planning.csv"
+file_path = "data/vehicle_arrival.csv"
 df_vehicle = pd.read_csv(file_path)
 
 # Establish a real-time simulation environment

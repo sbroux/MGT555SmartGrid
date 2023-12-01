@@ -13,7 +13,11 @@ for day in ["2023-12-01", "2023-12-02"]:
     vehicles_for_day = randint(15, 20)
     day_indices = date_range[date_range.strftime("%Y-%m-%d") == day].tolist()
     random_indices = [randint(0, len(day_indices) - 1) for _ in range(vehicles_for_day)]
-    data.extend([(str(day_indices[idx]), "Vehicle Arriving") for idx in random_indices])
+    day_vehicles = [
+        (str(day_indices[idx]), "Vehicle Arriving", f"Vehicle_{idx + 1}")
+        for idx in random_indices
+    ]
+    data.extend(day_vehicles)
 
 # Sort data by date time
 data.sort(key=lambda x: pd.to_datetime(x[0]))
@@ -22,7 +26,7 @@ data.sort(key=lambda x: pd.to_datetime(x[0]))
 file_path = "data/vehicle_arrival.csv"
 with open(file_path, mode="w", newline="") as file:
     writer = csv.writer(file)
-    writer.writerow(["Date Time", "Vehicle Arrival"])  # Write header
+    writer.writerow(["Date Time", "Vehicle Arrival, Vehicle_ID"])  # Write header
     writer.writerows(data)  # Write data rows
 
 print(

@@ -2,9 +2,9 @@ import serial
 import time
 
 
-comport = "/dev/tty.usbserial-1110"  # change with the port u are using
-arduino = serial.Serial(comport, 9600)
-time.sleep(2)
+# comport = "/dev/tty.usbserial-1110"  # change with the port u are using
+# arduino = serial.Serial(comport, 9600)
+# time.sleep(2)
 """
 We may add the constants here and do the decision in this section
 """
