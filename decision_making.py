@@ -40,15 +40,15 @@ i = 0
 file_path = "data/vehicle_arrival.csv"
 df_vehicle = pd.read_csv(file_path)
 time_scaling_factor = 1 / 300
-# start_time = pd.Timestamp("2023-12-01 00:00:00")
-# # Initialize the simulation environment with the specified start time
-# env = simpy.rt.RealtimeEnvironment(
-#     initial_time=start_time.timestamp(), factor=time_scaling_factor
-# )
 start_time = pd.Timestamp("2023-12-01 00:00:00")
+# Initialize the simulation environment with the specified start time
+env = simpy.rt.RealtimeEnvironment(
+    initial_time=start_time.timestamp(), factor=time_scaling_factor
+)
+# start_time = pd.Timestamp("2023-12-01 00:00:00")
 
-# Initialize the simulation environment
-env = simpy.Environment()
+# # Initialize the simulation environment
+# env = simpy.Environment()
 
 
 def my_simulation():

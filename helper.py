@@ -56,6 +56,7 @@ def charge_room1(
     total_room1_battery_level,
     room2_battery_level,
     energy_price_grid,
+    charging_power,
 ):
     """
     We charge the swapping batteries in room1 :
@@ -70,24 +71,28 @@ def charge_room1(
     energy_cost = 0
     if room2_battery_level > 30:
         room1_battery_level_empty = total_room1_battery_level - room1_battery_level
-        for i in range(room1_battery_level_empty):
-            room1_battery_level += (
-                1  # add the charging time for the simulation in real time
-            )
-            room2_battery_level -= 1
-
+        if room1_battery_level_empty > room2_battery_level:
+            room1_battery_level += room2_battery_level
+            room2_battery_level = 0
+        else:
+            room2_battery_level -= room1_battery_level_empty
+            room1_battery_level = total_room1_battery_level
+        charging_time = room1_battery_level_empty / charging_power
+        yield current_time.timeout(charging_time)  # Wait for the charging time
+        # room1_battery_level += room1_battery_level_empty
+        # room2_battery_level -= room1_battery_level_empty
         return room2_room1, room1_battery_level, room2_battery_level, energy_cost
     else:
         room1_battery_level_empty = total_room1_battery_level - room1_battery_level
-        for i in range(room1_battery_level_empty):
-            room1_battery_level += 1
-            energy_cost += energy_price_grid / 1000
+        charging_time = room1_battery_level_empty / charging_power
+        yield current_time.timeout(charging_time)
+        energy_cost += energy_price_grid / 1000 * charging_time
         return (
             grid_room1,
             room1_battery_level,
             room2_battery_level,
             energy_cost,
-        )  # 1 is the power of the battery
+        )
 
 
 def charge_room2(
@@ -119,7 +124,11 @@ def charge_room2(
 
 
 def charge_vehicle_with_chargers(
-    current_time, room2_battery_level, vehicle_battery_level, energy_price_grid
+    current_time,
+    room2_battery_level,
+    vehicle_battery_level,
+    energy_price_grid,
+    charging_power,
 ):
     """
     We charge the vehicle with the chargers in the parking:
@@ -130,10 +139,14 @@ def charge_vehicle_with_chargers(
     return : energy trajectory, room2_battery_level, energy_cost"""
 
     if room2_battery_level >= vehicle_battery_level:
+        charging_time = vehicle_battery_level / charging_power
+        yield current_time.timeout(charging_time)
         room2_battery_level -= vehicle_battery_level
         return room2_chargers, room2_battery_level, 0
     else:
-        energy_cost = energy_price_grid / 1000 * vehicle_battery_level
+        charging_time = vehicle_battery_level / charging_power
+        yield current_time.timeout(charging_time)
+        energy_cost = energy_price_grid / 1000 * charging_time
         return grid_chargers, room2_battery_level, energy_cost
 
 
@@ -142,12 +155,16 @@ def swap_batteries(current_time, room1_battery_level, vehicle_battery_level):
     We swap the battery of the vehicule with battery in room1
     thus the room1 battery level decreases by the power of the vehicle(constant)
 
+    We assume here that it will takes 5 seconds to swap the batteries
+
     room1_battery_level: battery level of room1
     vehicle_battery_level: battery level of the vehicle
 
     return: room1_battery_level
     """
+    swapping_time = 5  # in seconds
     room1_battery_level -= vehicle_battery_level
+    yield current_time.timeout(swapping_time)
     return room1_battery_level
 
 
