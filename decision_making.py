@@ -47,7 +47,6 @@ env = simpy.rt.RealtimeEnvironment(
 
 def my_simulation():
     while env.now < simulation_duration:
-        print(f"Simulation time: {env.now }")
         decision_making(
             env,
             df_vehicle,
@@ -56,12 +55,12 @@ def my_simulation():
             room2_battery_level,
             energy_price_grid,
         )
-        yield env.timeout(10)
+        yield env.timeout(5)
 
     # Start the simulation with all the battery fully charged
 
 
-simulation_duration = 3 * 3600 + env.now  # in seconds
+simulation_duration = 48 * 3600 + env.now  # in seconds
 env.process(my_simulation())  # Run the simulation for a full day
 env.run(
     until=simulation_duration

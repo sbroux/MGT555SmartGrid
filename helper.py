@@ -179,34 +179,26 @@ def decision_making(
     room2_battery_level,
     energy_price_grid,
 ):
-    print("env.now", env.now)
-    # for index, row in vehicle_arrival_data.iterrows():
-    #     vehicle_id = row["Vehicle_ID"]
-    #     arrival_time = row["Date Time"]
-    #     print("arrival time", arrival_time)
-    #     sim_time_datetime = datetime.utcfromtimestamp(env.now)
-    #     print("current time", sim_time_datetime)
-    #     arrival_time = datetime.strptime(arrival_time, "%Y-%m-%d %H:%M:%S")
-    #     # arrival_time_simulation = (
-    #     arrival_time - start_time
-    # ).total_seconds() * time_scaling_factor
+    sim_time_datetime = datetime.utcfromtimestamp(env.now)
+    if sim_time_datetime.minute % 30 == 0 and sim_time_datetime.second == 0:
+        print("env.now", sim_time_datetime)
+        for index, row in vehicle_arrival_data.iterrows():
+            vehicle_id = row["Vehicle_ID"]
+            arrival_time = row["Date Time"]
 
-    # Compare the arrival time in the dataset with the current simulation time
-    charge_vehicle(
-        env,
-        100,
-        room1_battery_level,
-        room2_battery_level,
-        vehicle_battery_level,
-        energy_price_grid,
-    )
-    print(
-        # f"Making time-sensitive decisions for Vehicle {vehicle_id} at time {arrival_time} "
-        f"with current simulation time {datetime.fromtimestamp(env.now)}"
-    )
-    # break  # Exit the loop once a decision has been made
+            arrival_time = datetime.strptime(arrival_time, "%Y-%m-%d %H:%M:%S")
+            # print("sim_time_datetime", sim_time_datetime)
 
-    # Your time-sensitive decision-making algorithm goes here
-    # print(
-    #     f"Making time-sensitive decisions for Vehicle {vehicle_id} at time {datetime.fromtimestamp(env.now)}"
-    # )
+            if arrival_time == sim_time_datetime:
+                print("arrival time", arrival_time)
+                print("current time", sim_time_datetime)
+                # Compare the arrival time in the dataset with the current simulation time
+                charge_vehicle(
+                    env,
+                    100,
+                    room1_battery_level,
+                    room2_battery_level,
+                    vehicle_battery_level,
+                    energy_price_grid,
+                )
+                print("charging vehicle", vehicle_id)
