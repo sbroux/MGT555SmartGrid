@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import serial
 import time
 import pandas as pd
@@ -190,6 +190,7 @@ def decision_making(
 
         # Compare the arrival time in the dataset with the current simulation time
         if arrival_time_simulation == current_time:
+            print("trueeee")
             charge_vehicle(
                 current_time,
                 room1_battery_level,

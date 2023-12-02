@@ -39,7 +39,7 @@ i = 0
 # read vehicul arrival data
 file_path = "data/vehicle_arrival.csv"
 df_vehicle = pd.read_csv(file_path)
-time_scaling_factor = 1 / 300
+time_scaling_factor = 1 / 150
 start_time = pd.Timestamp("2023-12-01 00:00:00")
 # Initialize the simulation environment with the specified start time
 env = simpy.rt.RealtimeEnvironment(
@@ -62,7 +62,7 @@ def my_simulation():
             room2_battery_level,
             energy_price_grid,
         )
-        yield env.timeout(6)
+        yield env.timeout(10)
         print(f"Simulation time: {env.now}")
     # Start the simulation with all the battery fully charged
 
