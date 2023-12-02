@@ -1,7 +1,10 @@
+import datetime
 import serial
 import time
+import pandas as pd
 
-
+time_scaling_factor = 1 / 300
+start_time = pd.Timestamp("2023-12-01 00:00:00")
 # comport = "/dev/tty.usbserial-1110"  # change with the port u are using
 # arduino = serial.Serial(comport, 9600)
 # time.sleep(2)
@@ -180,9 +183,13 @@ def decision_making(
         vehicle_id = row["Vehicle_ID"]
         arrival_time = row["Date Time"]
         print("arrival time", arrival_time)
+        arrival_time = datetime.strptime(arrival_time, "%Y-%m-%d %H:%M:%S")
+        arrival_time_simulation = (
+            arrival_time - start_time
+        ).total_seconds() * time_scaling_factor
 
         # Compare the arrival time in the dataset with the current simulation time
-        if arrival_time == current_time:
+        if arrival_time_simulation == current_time:
             charge_vehicle(
                 current_time,
                 room1_battery_level,
