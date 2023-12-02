@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import serial
 import time
 import pandas as pd
 
-time_scaling_factor = 1 / 300
+time_scaling_factor = 3600 / 10
 start_time = pd.Timestamp("2023-12-01 00:00:00")
 # comport = "/dev/tty.usbserial-1110"  # change with the port u are using
 # arduino = serial.Serial(comport, 9600)
@@ -172,39 +172,41 @@ def swap_batteries(current_time, room1_battery_level, vehicle_battery_level):
 
 
 def decision_making(
-    current_time,
+    env,
     vehicle_arrival_data,
     vehicle_battery_level,
     room1_battery_level,
     room2_battery_level,
     energy_price_grid,
 ):
-    for index, row in vehicle_arrival_data.iterrows():
-        vehicle_id = row["Vehicle_ID"]
-        arrival_time = row["Date Time"]
-        print("arrival time", arrival_time)
-        arrival_time = datetime.strptime(arrival_time, "%Y-%m-%d %H:%M:%S")
-        arrival_time_simulation = (
-            arrival_time - start_time
-        ).total_seconds() * time_scaling_factor
+    print("env.now", env.now)
+    # for index, row in vehicle_arrival_data.iterrows():
+    #     vehicle_id = row["Vehicle_ID"]
+    #     arrival_time = row["Date Time"]
+    #     print("arrival time", arrival_time)
+    #     sim_time_datetime = datetime.utcfromtimestamp(env.now)
+    #     print("current time", sim_time_datetime)
+    #     arrival_time = datetime.strptime(arrival_time, "%Y-%m-%d %H:%M:%S")
+    #     # arrival_time_simulation = (
+    #     arrival_time - start_time
+    # ).total_seconds() * time_scaling_factor
 
-        # Compare the arrival time in the dataset with the current simulation time
-        if arrival_time_simulation == current_time:
-            print("trueeee")
-            charge_vehicle(
-                current_time,
-                room1_battery_level,
-                room2_battery_level,
-                vehicle_battery_level,
-                energy_price_grid,
-            )
-            print(
-                f"Making time-sensitive decisions for Vehicle {vehicle_id} at time {arrival_time} "
-                f"with current simulation time {current_time}"
-            )
-            break  # Exit the loop once a decision has been made
+    # Compare the arrival time in the dataset with the current simulation time
+    charge_vehicle(
+        env,
+        100,
+        room1_battery_level,
+        room2_battery_level,
+        vehicle_battery_level,
+        energy_price_grid,
+    )
+    print(
+        # f"Making time-sensitive decisions for Vehicle {vehicle_id} at time {arrival_time} "
+        f"with current simulation time {datetime.fromtimestamp(env.now)}"
+    )
+    # break  # Exit the loop once a decision has been made
 
     # Your time-sensitive decision-making algorithm goes here
-    print(
-        f"Making time-sensitive decisions for Vehicle {vehicle_id} at time {current_time}"
-    )
+    # print(
+    #     f"Making time-sensitive decisions for Vehicle {vehicle_id} at time {datetime.fromtimestamp(env.now)}"
+    # )

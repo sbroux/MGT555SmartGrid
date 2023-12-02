@@ -39,7 +39,7 @@ i = 0
 # read vehicul arrival data
 file_path = "data/vehicle_arrival.csv"
 df_vehicle = pd.read_csv(file_path)
-time_scaling_factor = 1 / 150
+time_scaling_factor = 3600 / 10
 start_time = pd.Timestamp("2023-12-01 00:00:00")
 # Initialize the simulation environment with the specified start time
 env = simpy.rt.RealtimeEnvironment(
@@ -53,21 +53,21 @@ env = simpy.rt.RealtimeEnvironment(
 
 def my_simulation():
     while True:  # Run the simulation indefinitely
-        print(f"Simulation time: {env.now}")
+        print(f"Simulation time: {env.now / 3600 }")
         decision_making(
-            env.now,
+            env,
             df_vehicle,
             vehicle_battery_level,
             room1_battery_level,
             room2_battery_level,
             energy_price_grid,
         )
-        yield env.timeout(10)
+        yield env.timeout(3600)
         print(f"Simulation time: {env.now}")
     # Start the simulation with all the battery fully charged
 
 
-simulation_duration = env.now + 86400 * time_scaling_factor
+simulation_duration = env.now + 48 * 3600
 env.process(my_simulation())  # Run the simulation for a full day
 env.run(
     until=simulation_duration
