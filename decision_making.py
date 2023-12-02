@@ -21,8 +21,6 @@ room2_chargers = "R2C"
 chargers_grid = "CR2g"
 grid_chargers = "gCR2"
 
-# Define the time of the simulation
-simulation_time = 3600  # in seconds
 # Define initial battery levels and constraints
 room1_battery_level = 100  # Room 1 battery level in percentage
 room2_battery_level = 100  # Room 2 battery level in percentage
@@ -39,21 +37,17 @@ i = 0
 # read vehicul arrival data
 file_path = "data/vehicle_arrival.csv"
 df_vehicle = pd.read_csv(file_path)
-time_scaling_factor = 3600 / 10
+time_scaling_factor = 480 / (48 * 3600)
 start_time = pd.Timestamp("2023-12-01 00:00:00")
 # Initialize the simulation environment with the specified start time
 env = simpy.rt.RealtimeEnvironment(
     initial_time=start_time.timestamp(), factor=time_scaling_factor
 )
-# start_time = pd.Timestamp("2023-12-01 00:00:00")
-
-# # Initialize the simulation environment
-# env = simpy.Environment()
 
 
 def my_simulation():
-    while True:  # Run the simulation indefinitely
-        print(f"Simulation time: {env.now / 3600 }")
+    while env.now < simulation_duration:
+        print(f"Simulation time: {env.now }")
         decision_making(
             env,
             df_vehicle,
@@ -62,16 +56,16 @@ def my_simulation():
             room2_battery_level,
             energy_price_grid,
         )
-        yield env.timeout(3600)
-        print(f"Simulation time: {env.now}")
+        yield env.timeout(10)
+
     # Start the simulation with all the battery fully charged
 
 
-simulation_duration = env.now + 48 * 3600
+simulation_duration = 3 * 3600 + env.now  # in seconds
 env.process(my_simulation())  # Run the simulation for a full day
 env.run(
     until=simulation_duration
-)  # 48 hours in simulation time where 1 hour = 30 seconds
+)  # Run the simulation for a full day (24 hours * 3600 seconds)
 
 
 # Close the serial connection
