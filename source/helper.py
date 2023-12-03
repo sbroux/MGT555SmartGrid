@@ -96,13 +96,29 @@ def charge_vehicle_with_chargers(
         return grid_chargers
 
 
-def charge_stockage_room_with_solar_pannel(current_time, solar_pannel_power):
+def charge_stockage_room_with_solar_pannel(
+    current_time, solar_pannel_power, stockage_room_level
+):
     """
     We charge the stockage room with the solar pannel
     """
     # yield current_time.timeout(1)
     stockage_room_level += solar_pannel_power
     print("charging with solar pannel, current room2 level: ", stockage_room_level)
+    return stockage_room_level
+
+
+def charge_stockage_room_with_grid(
+    current_time, energy_price_grid, stockage_room_level, energy_cost
+):
+    """
+    We charge the stockage room with the grid
+    energy cost is incremented
+    """
+    # yield current_time.timeout(1)
+
+    stockage_room_level += 100 / 9
+    print("charging with grid, current room2 level: ", stockage_room_level)
     return stockage_room_level
 
 
@@ -128,8 +144,8 @@ def decision_making(
                 env, solar_pannel_power
             )
         else:
-            stockage_room_level = charge_stockage_room_with_grid(
-                env, energy_price_grid, stockage_room_level
+            stockage_room_level, energy_cost = charge_stockage_room_with_grid(
+                env, energy_price_grid, stockage_room_level, energy_cost
             )
 
         if stockage_room_level > threshold:
