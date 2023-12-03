@@ -21,6 +21,15 @@ room2_chargers = "R2C"
 chargers_grid = "CR2g"
 grid_chargers = "gCR2"
 
+swapping_room_slots = [1, 1, 1, 1, 1, 1, 1, 1, 1]
+number_of_battery_charged = 9
+vehicle_battery_capacity = 500  # in kWh
+stockage_room_level = 100  # Room 2 battery level in percentage
+charger_power = 150  # in kW
+charging_time = vehicle_battery_capacity / charger_power
+# Define the energy cost as a global variable it will be incremented if we charge with the grid
+energy_cost = 0
+
 # Define initial battery levels and constraints
 room1_battery_level = 100  # Room 1 battery level in percentage
 room2_battery_level = 100  # Room 2 battery level in percentage
@@ -43,6 +52,14 @@ start_time = pd.Timestamp("2023-12-01 00:00:00")
 env = simpy.rt.RealtimeEnvironment(
     initial_time=start_time.timestamp(), factor=time_scaling_factor
 )
+swapping_room_slots = [1, 1, 1, 1, 1, 1, 1, 1, 1]
+number_of_battery_charged = 9
+vehicle_battery_capacity = 500  # in kWh
+stockage_room_level = 100  # Room 2 battery level in percentage
+charger_power = 150  # in kW
+charging_time = vehicle_battery_capacity / charger_power
+# Define the energy cost as a global variable it will be incremented if we charge with the grid
+energy_cost = 0
 
 
 def my_simulation():
@@ -50,13 +67,15 @@ def my_simulation():
         decision_making(
             env,
             df_vehicle,
-            vehicle_battery_level,
-            room1_battery_level,
-            room2_battery_level,
+            swapping_room_slots,
+            number_of_battery_charged,
+            stockage_room_level,
             energy_price_grid,
+            vehicle_battery_capacity,
+            charging_time,
+            energy_cost,
         )
         yield env.timeout(5)
-        print(simulation_duration)
 
     # Start the simulation with all the battery fully charged
 

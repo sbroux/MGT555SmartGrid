@@ -21,21 +21,22 @@ room2_chargers = "R2C"
 chargers_grid = "CR2g"
 grid_chargers = "gCR2"
 
-energy_price_grid = 0.2  # in euro/kWh
-# Define initial battery levels and constraints
-swapping_room_slots = [1, 1, 1, 1, 1, 1, 1, 1, 1]
-number_of_battery_charged = 9
-vehicle_battery_capacity = 500  # in kWh
-room2_battery_level = 100  # Room 2 battery level in percentage
-charger_power = 150  # in kW
-charging_time_per_hour = vehicle_battery_capacity / charger_power
-# Define the energy cost as a global variable it will be incremented if we charge with the grid
-energy_cost = 0
+# To use when everything works
+electricity_price = pd.read_csv("data/electricity_price.csv")  # in euro/kWh
+
+# Define constants based on assumptions
+energy_price_grid = 11  # in ct/kW
 
 
 def charge_vehicle(
     current_time,
     energy_price_grid,
+    swapping_room_slots,
+    number_of_battery_charged,
+    stockage_room_level,
+    vehicle_battery_capacity,
+    charging_time,
+    energy_cost,
 ):
     """
     We charge the vehicle :
@@ -54,7 +55,12 @@ def charge_vehicle(
                 break
     else:
         charge_vehicle_with_chargers(
-            current_time, room2_battery_level, energy_price_grid
+            current_time,
+            energy_price_grid,
+            stockage_room_level,
+            vehicle_battery_capacity,
+            charging_time,
+            energy_cost,
         )
         print("charging with chargers")
 
@@ -131,25 +137,28 @@ def charge_room2(
         return grid_room2, room2_battery_level, energy_cost
 
 
-def charge_vehicle_with_chargers(current_time, energy_price_grid, charging_power):
+def charge_vehicle_with_chargers(current_time, energy_price_grid):
     """
     We charge the vehicle with the chargers in the parking:
     Two cases :
         (1) We charge the vehicle with the stockage room (room2) depending on the battery level of room2
         (2) We charge the vehicle with the grid and we pay the energy price
 
-    return : energy trajectory, room2_battery_level, energy_cost"""
+    return : energy trajectory"""
 
-    if room2_battery_level >= vehicle_battery_level:
-        charging_time = vehicle_battery_level / charging_power
+    if stockage_room_level >= 100 / 9:
         yield current_time.timeout(charging_time)
-        room2_battery_level -= vehicle_battery_level
-        return room2_chargers, room2_battery_level, 0
+        stockage_room_level -= 100 / 9
+        charge_room2(current_time, energy_price_grid)
+        print(
+            "charing with chargers + room2 , current room2 level: ", stockage_room_level
+        )
+        return room2_chargers
     else:
-        charging_time = vehicle_battery_level / charging_power
         yield current_time.timeout(charging_time)
-        energy_cost = energy_price_grid / 1000 * charging_time
-        return grid_chargers, room2_battery_level, energy_cost
+        energy_cost += energy_price_grid * vehicle_battery_capacity / 100
+        print("charing with chargers + grid , current energy cost: ", energy_cost)
+        return grid_chargers
 
 
 def swap_batteries(current_time):
@@ -161,18 +170,22 @@ def swap_batteries(current_time):
 
     """
     swapping_time = 5  # in seconds
-    yield current_time.timeout(swapping_time)
     charge_room1(current_time)
 
 
 def decision_making(
     env,
     vehicle_arrival_data,
-    vehicle_battery_level,
-    room1_battery_level,
-    room2_battery_level,
+    swapping_room_slots,
+    number_of_battery_charged,
+    stockage_room_level,
     energy_price_grid,
+    vehicle_battery_capacity,
+    charging_time,
+    energy_cost,
 ):
+    # Define initial battery levels and constraints
+
     sim_time_datetime = datetime.utcfromtimestamp(env.now)
     if sim_time_datetime.minute % 30 == 0 and sim_time_datetime.second == 0:
         print("env.now", sim_time_datetime)
@@ -189,10 +202,12 @@ def decision_making(
                 # Compare the arrival time in the dataset with the current simulation time
                 charge_vehicle(
                     env,
-                    100,
-                    room1_battery_level,
-                    room2_battery_level,
-                    vehicle_battery_level,
                     energy_price_grid,
+                    swapping_room_slots,
+                    number_of_battery_charged,
+                    stockage_room_level,
+                    vehicle_battery_capacity,
+                    charging_time,
+                    energy_cost,
                 )
                 print("charging vehicle", vehicle_id)
