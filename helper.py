@@ -27,6 +27,8 @@ swapping_room_slots = [1, 1, 1, 1, 1, 1, 1, 1, 1]
 number_of_battery_charged = 9
 vehicle_battery_capacity = 500  # in kWh
 room2_battery_level = 100  # Room 2 battery level in percentage
+charger_power = 150  # in kW
+charging_time_per_hour = vehicle_battery_capacity / charger_power
 # Define the energy cost as a global variable it will be incremented if we charge with the grid
 energy_cost = 0
 
@@ -46,6 +48,7 @@ def charge_vehicle(
         for i in range(swapping_room_slots):
             if swapping_room_slots[i] == 1:
                 swapping_room_slots[i] = 0
+                number_of_battery_charged -= 1
                 swap_batteries(current_time)
                 print("charging with swapping room")
                 break
@@ -128,13 +131,7 @@ def charge_room2(
         return grid_room2, room2_battery_level, energy_cost
 
 
-def charge_vehicle_with_chargers(
-    current_time,
-    room2_battery_level,
-    vehicle_battery_level,
-    energy_price_grid,
-    charging_power,
-):
+def charge_vehicle_with_chargers(current_time, energy_price_grid, charging_power):
     """
     We charge the vehicle with the chargers in the parking:
     Two cases :
@@ -155,22 +152,17 @@ def charge_vehicle_with_chargers(
         return grid_chargers, room2_battery_level, energy_cost
 
 
-def swap_batteries(current_time, room1_battery_level, vehicle_battery_level):
+def swap_batteries(current_time):
     """
     We swap the battery of the vehicule with battery in room1
     thus the room1 battery level decreases by the power of the vehicle(constant)
 
     We assume here that it will takes 5 seconds to swap the batteries
 
-    room1_battery_level: battery level of room1
-    vehicle_battery_level: battery level of the vehicle
-
-    return: room1_battery_level
     """
     swapping_time = 5  # in seconds
-    room1_battery_level -= vehicle_battery_level
     yield current_time.timeout(swapping_time)
-    return room1_battery_level
+    charge_room1(current_time)
 
 
 def decision_making(
