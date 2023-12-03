@@ -137,7 +137,14 @@ def charge_room2(
         return grid_room2, room2_battery_level, energy_cost
 
 
-def charge_vehicle_with_chargers(current_time, energy_price_grid):
+def charge_vehicle_with_chargers(
+    current_time,
+    energy_price_grid,
+    stockage_room_level,
+    vehicle_battery_capacity,
+    charging_time,
+    energy_cost,
+):
     """
     We charge the vehicle with the chargers in the parking:
     Two cases :
