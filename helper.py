@@ -50,7 +50,15 @@ def charge_vehicle(
             if swapping_room_slots[i] == 1:
                 swapping_room_slots[i] = 0
                 number_of_battery_charged -= 1
-                swap_batteries(current_time)
+                swap_batteries(
+                    current_time,
+                    swapping_room_slots,
+                    number_of_battery_charged,
+                    stockage_room_level,
+                    vehicle_battery_capacity,
+                    charging_time,
+                    energy_cost,
+                )
                 print("charging with swapping room")
                 break
     else:
