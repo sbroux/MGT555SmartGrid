@@ -56,11 +56,13 @@ def my_simulation():
             energy_price_grid,
         )
         yield env.timeout(5)
+        print(simulation_duration)
 
     # Start the simulation with all the battery fully charged
 
 
-simulation_duration = 48 * 3600 + env.now  # in seconds
+simulation_duration = 48 * 3600 + env.now
+# in seconds
 env.process(my_simulation())  # Run the simulation for a full day
 env.run(
     until=simulation_duration

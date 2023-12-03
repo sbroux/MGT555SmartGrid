@@ -22,14 +22,17 @@ chargers_grid = "CR2g"
 grid_chargers = "gCR2"
 
 energy_price_grid = 0.2  # in euro/kWh
+# Define initial battery levels and constraints
+swapping_room_slots = [1, 1, 1, 1, 1, 1, 1, 1, 1]
+number_of_battery_charged = 9
+vehicle_battery_capacity = 500  # in kWh
+room2_battery_level = 100  # Room 2 battery level in percentage
+# Define the energy cost as a global variable it will be incremented if we charge with the grid
+energy_cost = 0
 
 
 def charge_vehicle(
     current_time,
-    total_room1_battery_level,
-    room1_battery_level,
-    room2_battery_level,
-    vehicle_battery_level,
     energy_price_grid,
 ):
     """
@@ -37,20 +40,20 @@ def charge_vehicle(
     Two cases :
         (1) We charge the vehicle with the swapping batteries in room1
         (2) We charge the vehicle with the chargers in the parking
-    return : room1_battery_level, room2_battery_level, energy_cost
+    return :
     """
-    if room1_battery_level < 0.1 * total_room1_battery_level:
-        _, room2_battery_level, energy_cost = charge_vehicle_with_chargers(
-            current_time, room2_battery_level, vehicle_battery_level, energy_price_grid
+    if number_of_battery_charged > 0:
+        for i in range(swapping_room_slots):
+            if swapping_room_slots[i] == 1:
+                swapping_room_slots[i] = 0
+                swap_batteries(current_time)
+                print("charging with swapping room")
+                break
+    else:
+        charge_vehicle_with_chargers(
+            current_time, room2_battery_level, energy_price_grid
         )
         print("charging with chargers")
-    else:
-        energy_cost = 0
-        room1_battery_level = swap_batteries(
-            current_time, room1_battery_level, vehicle_battery_level
-        )
-        print("charging with swapping room")
-    return room1_battery_level, room2_battery_level, energy_cost
 
 
 def charge_room1(
@@ -69,10 +72,9 @@ def charge_room1(
 
     The threshold for the battery level in room2 is 30%
 
-    return : energy trajectory, room1_battery_level, room2_battery_level, energy_cost
+    return : energy trajectory
     """
-    energy_cost = 0
-    if room2_battery_level > 30:
+    if room2_battery_level > 9:
         room1_battery_level_empty = total_room1_battery_level - room1_battery_level
         if room1_battery_level_empty > room2_battery_level:
             room1_battery_level += room2_battery_level
