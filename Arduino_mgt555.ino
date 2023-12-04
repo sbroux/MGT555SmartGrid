@@ -3,6 +3,7 @@
 #define LED_PIN     7 // Define the pin connected to the WS2812B LEDs
 
 CRGB leds[NUM_LEDS];
+l
 
 void setup() {
   FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
