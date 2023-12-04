@@ -289,53 +289,54 @@ def decision_making(
             vehicle_arrival_data["Date Time"]
             == sim_time_datetime.strftime("%Y-%m-%d %H:%M:%S")
         ]
-        if arriving_vehicles.empty:
-            if stockage_room_level < 500 * 9 * 0.8:
-                # Call the function to charge the storage room
-                # Replace 'charge_storage_room' with the actual function name
-                traject, stockage_room_level, energy_cost = charge_stockage_room(
+        # if arriving_vehicles.empty:
+        #     if stockage_room_level < 500 * 9 * 0.8:
+        #         # Call the function to charge the storage room
+        #         # Replace 'charge_storage_room' with the actual function name
+        #         traject, stockage_room_level, energy_cost = charge_stockage_room(
+        #             env,
+        #             solar_pannel_power,
+        #             100,
+        #             charging_time,
+        #             energy_price_grid,
+        #             stockage_room_level,
+        #             energy_cost,
+        #         )
+
+        #     elif number_of_battery_charged < 9:
+        #         (
+        #             traject,
+        #             stockage_room_level,
+        #             number_of_battery_charged,
+        #             swapping_room_slots,
+        #         ) = charge_swapping_room(
+        #             env,
+        #             stockage_room_level,
+        #             swapping_room_slots,
+        #             number_of_battery_charged,
+        #         )
+        #     else:
+        #         None
+        # else:
+        arduino.write(grid_room1.encode("ascii"))
+        for index, row in vehicle_arrival_data.iterrows():
+            vehicle_id = row["Vehicle_ID"]
+            arrival_time = row["Date Time"]
+            arrival_time = datetime.strptime(arrival_time, "%Y-%m-%d %H:%M:%S")
+            # print("sim_time_datetime", sim_time_datetime)
+            if arrival_time == sim_time_datetime:
+                print("arrival time", arrival_time)
+                print("current time", sim_time_datetime)
+                # Compare the arrival time in the dataset with the current simulation time
+                charge_vehicle(
                     env,
-                    solar_pannel_power,
-                    100,
-                    charging_time,
                     energy_price_grid,
+                    swapping_room_slots,
+                    number_of_battery_charged,
                     stockage_room_level,
+                    vehicle_battery_capacity,
+                    charging_time,
                     energy_cost,
                 )
-
-            elif number_of_battery_charged < 9:
-                (
-                    traject,
-                    stockage_room_level,
-                    number_of_battery_charged,
-                    swapping_room_slots,
-                ) = charge_swapping_room(
-                    env,
-                    stockage_room_level,
-                    swapping_room_slots,
-                    number_of_battery_charged,
-                )
-            else:
-                None
-        else:
-            for index, row in vehicle_arrival_data.iterrows():
-                vehicle_id = row["Vehicle_ID"]
-                arrival_time = row["Date Time"]
-                arrival_time = datetime.strptime(arrival_time, "%Y-%m-%d %H:%M:%S")
-                # print("sim_time_datetime", sim_time_datetime)
-                if arrival_time == sim_time_datetime:
-                    print("arrival time", arrival_time)
-                    print("current time", sim_time_datetime)
-                    # Compare the arrival time in the dataset with the current simulation time
-                    charge_vehicle(
-                        env,
-                        energy_price_grid,
-                        swapping_room_slots,
-                        number_of_battery_charged,
-                        stockage_room_level,
-                        vehicle_battery_capacity,
-                        charging_time,
-                        energy_cost,
-                    )
-                    arduino.write(grid_room1.encode("ascii"))
-                    print("charging vehicle", vehicle_id)
+                arduino.write(grid_room1.encode("ascii"))
+                print("charging vehicle", vehicle_id)

@@ -8,7 +8,7 @@ import pandas as pd
 from helper import *
 
 # Initialize the serial connection
-comport = "/dev/tty.usbserial-1110"  # change with the port u are using
+comport = "/dev/tty.usbserial-110"  # change with the port u are using
 arduino = serial.Serial(comport, 9600)
 time.sleep(2)
 
@@ -32,7 +32,7 @@ i = 0
 # read vehicul arrival data
 file_path = "data/vehicle_arrival.csv"
 df_vehicle = pd.read_csv(file_path)
-time_scaling_factor = 3600 / (48 * 3600)
+time_scaling_factor = 960 / (48 * 3600)
 start_time = pd.Timestamp("2023-12-01 00:00:00")
 # Initialize the simulation environment with the specified start time
 env = simpy.rt.RealtimeEnvironment(
@@ -65,7 +65,7 @@ def my_simulation():
             solar_pannel_power,
             arduino,
         )
-        yield env.timeout(20)
+        yield env.timeout(10)
 
     # Start the simulation with all the battery fully charged
 
