@@ -51,6 +51,17 @@ def charge_vehicle(
             if slot == 1:
                 swapping_room_slots[i] = 0
                 number_of_battery_charged -= 1
+                (
+                    traject,
+                    stockage_room_level,
+                    number_of_battery_charged,
+                    swapping_room_slots,
+                ) = charge_swapping_room(
+                    current_time,
+                    stockage_room_level,
+                    swapping_room_slots,
+                    number_of_battery_charged,
+                )
                 print("charging with swapping room")
                 break
     else:

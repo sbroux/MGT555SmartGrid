@@ -71,12 +71,13 @@ def my_simulation():
 
 simulation_duration = 500 * 3600 + env.now
 # in seconds
-env.process(my_simulation())  # Run the simulation for a full day
+env.process(my_simulation())
+cProfile.run("my_simulation()")  # Run the simulation for a full day
 env.run(
     until=simulation_duration
 )  # Run the simulation for a full day (24 hours * 3600 seconds)
 
-cProfile.run("run_simulation()")
+
 # Close the serial connection
 # arduino.close()
 # print("connection closed")
